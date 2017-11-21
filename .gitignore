@@ -37,3 +37,9 @@ node_modules
 # personal
 /.vscode
 /typings
+
+#media
+/media
+
+#sync-data
+sync-data.json
