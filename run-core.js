@@ -197,20 +197,49 @@ bot.on('message', msg => {
       if (msg.FromUserName.indexOf('@@') === 0) {
         // 如果是群消息
         console.log('这是群消息')
+        // 判断是否被@
+        let arr = msg.Content.split(':\n')
+        console.log('arr:', JSON.stringify(arr))
+        if (arr[1].indexOf('@木头人') != -1) {
+          // 被@了
+          // 通过图灵机器人，获取回复内容
+          let _userid = msg.FromUserName.substring(2, msg.FromUserName.length) + '_' + arr[0].split(':')[0]
+          let _content = arr[1].split('@木头人').join('')
+          console.log('content:', _content)
+          tuling.getAPI(_userid, _content, function (data) {
+            console.log(`----------机器人返回信息： ${JSON.stringify(data)}----------`)
+            if (data.code == 100000) {
+              // 如果获取回复成功，返回给信息发起者
+              bot.sendMsg(data.text, msg.FromUserName)
+              .catch(err => {
+                bot.emit('error', err)
+              })
+            }
+            // else if (data.code == 200000) {
+            //   bot.sendMsg({
+            //     file: request(data.url),
+            //     filename: 'bot-search.jpg'
+            //   }, msg.FromUserName)
+            //   .catch(err => {
+            //     console.log(err)
+            //   })
+            // }
+          })
+        }
       } else {
         // 否则
         console.log('这是普通消息')
         // 通过图灵机器人，获取回复内容
-        tuling.getAPI(msg.FromUserName.substring(1, msg.FromUserName.length), msg.Content, function (data) {
-          console.log(`----------机器人返回信息： ${JSON.stringify(data)}----------`)
-          if (data.code == 100000) {
-            // 如果获取回复成功，返回给信息发起者
-            bot.sendMsg(data.text, msg.FromUserName)
-            .catch(err => {
-              bot.emit('error', err)
-            })
-          }
-        })
+        // tuling.getAPI(msg.FromUserName.substring(1, msg.FromUserName.length), msg.Content, function (data) {
+        //   console.log(`----------机器人返回信息： ${JSON.stringify(data)}----------`)
+        //   if (data.code == 100000) {
+        //     // 如果获取回复成功，返回给信息发起者
+        //     bot.sendMsg(data.text, msg.FromUserName)
+        //     .catch(err => {
+        //       bot.emit('error', err)
+        //     })
+        //   }
+        // })
       }
       break
     case bot.CONF.MSGTYPE_IMAGE:
