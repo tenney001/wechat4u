@@ -4,6 +4,7 @@ const Wechat = require('./src/wechat.js')
 const qrcode = require('qrcode-terminal')
 const fs = require('fs')
 const request = require('request')
+const tuling = require('./src/util/tuling')
 
 let bot
 /**
@@ -178,6 +179,11 @@ bot.on('message', msg => {
    * 获取消息发送者的显示名
    */
   console.log(bot.contacts[msg.FromUserName].getDisplayName())
+
+  /**
+   * 获取消息用户标识
+   */
+  console.log(`----------${msg.FromUserName}----------`)
   /**
    * 判断消息类型
    */
@@ -187,6 +193,25 @@ bot.on('message', msg => {
        * 文本消息
        */
       console.log(msg.Content)
+      // 判断是否是群消息
+      if (msg.FromUserName.indexOf('@@') === 0) {
+        // 如果是群消息
+        console.log('这是群消息')
+      } else {
+        // 否则
+        console.log('这是普通消息')
+        // 通过图灵机器人，获取回复内容
+        tuling.getAPI(msg.FromUserName.substring(1, msg.FromUserName.length), msg.Content, function (data) {
+          console.log(`----------机器人返回信息： ${JSON.stringify(data)}----------`)
+          if (data.code == 100000) {
+            // 如果获取回复成功，返回给信息发起者
+            bot.sendMsg(data.text, msg.FromUserName)
+            .catch(err => {
+              bot.emit('error', err)
+            })
+          }
+        })
+      }
       break
     case bot.CONF.MSGTYPE_IMAGE:
       /**
