@@ -351,10 +351,10 @@ bot.on('message', msg => {
  */
 bot.on('message', msg => {
   // 不是所有消息都可以直接转发
-  bot.forwardMsg(msg, 'filehelper')
-    .catch(err => {
-      bot.emit('error', err)
-    })
+  // bot.forwardMsg(msg, 'filehelper')
+  //   .catch(err => {
+  //     bot.emit('error', err)
+  //   })
 })
 /**
  * 如何获取联系人头像
